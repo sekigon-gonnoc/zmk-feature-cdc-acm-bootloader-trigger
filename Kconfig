@@ -1,0 +1,37 @@
+# Copyright (c) 2025 sekigon-gonnoc
+# SPDX-License-Identifier: MIT
+
+config ZMK_CDC_ACM_BOOTLOADER_TRIGGER
+    bool "Enter bootloader mode when CDC ACM port is closed after being opened at 1200bps"
+    depends on USB_CDC_ACM && USB_DEVICE_STACK && ZMK_USB
+    help
+      When enabled, the device will reset into bootloader mode
+      when a CDC ACM port with the bootloader-trigger property is closed after being opened at 1200bps.
+      This is compatible with the Arduino bootloader trigger mechanism.
+
+if ZMK_CDC_ACM_BOOTLOADER_TRIGGER
+
+config ZMK_CDC_ACM_BOOTLOADER_TRIGGER_DELAY_MS
+    int "Milliseconds to delay before jumping to bootloader"
+    default 100
+    help
+      Time to wait after detecting port close before jumping to bootloader.
+      This allows USB communications to complete.
+
+config ZMK_CDC_ACM_BOOTLOADER_TRIGGER_POLL_MS
+    int "Milliseconds between polling CDC ACM state"
+    default 100
+    help
+      Interval in milliseconds to poll the CDC ACM state to detect 
+      when the port is opened at 1200 baud and then closed.
+      Polling only occurs when USB is connected.
+
+config ZMK_CDC_ACM_BOOTLOADER_TRIGGER_RESET_CODE
+    hex "Reset code for entering bootloader mode"
+    default 0x57
+    help
+      The reset code to use when rebooting into bootloader mode.
+      Default value 0x57 is for UF2 bootloader (used on Adafruit nRF52 Bootloader).
+      For other boards/bootloaders, you may need to use a different code.
+
+endif # ZMK_CDC_ACM_BOOTLOADER_TRIGGER

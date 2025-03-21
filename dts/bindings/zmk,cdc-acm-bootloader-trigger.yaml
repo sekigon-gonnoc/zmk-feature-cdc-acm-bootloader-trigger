@@ -1,0 +1,9 @@
+description: ZMK CDC ACM bootloader trigger for port close after 1200 baud detection
+
+compatible: "zmk,cdc-acm-bootloader-trigger"
+
+properties:
+  cdc-port:
+    type: phandle
+    required: true
+    description: CDC ACM port to monitor for 1200bps followed by port close
