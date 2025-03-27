@@ -25,6 +25,11 @@ manifest:
     path: config
 ```
 
+## Requirements
+
+- At least one device compatible with `zephyr,cdc-acm-uart` must be available in your device tree. Without this, the build will fail.
+- If you have ZMK Studio or USB Logging enabled, those CDC ACM devices can be automatically detected and used.
+
 ## Usage
 
 ### 1. Enable the feature in your <keyboard>.conf
@@ -54,9 +59,23 @@ The `RESET_CODE` should be set to match your board's bootloader entry code:
 
 ### 2. Add the bootloader trigger node to your device tree overlay
 
-There are two common configurations:
+You can add the bootloader trigger in two ways:
 
-#### Option 1: Using a dedicated CDC ACM UART port
+#### Option 1: Auto-detection
+
+```dts
+/ {
+    bootloader_trigger: bootloader_trigger {
+        compatible = "zmk,cdc-acm-bootloader-trigger";
+    };
+};
+```
+
+With this configuration, the module will automatically detect and use the first available device with `zephyr,cdc-acm-uart` compatibility. If you have ZMK Studio or USB Logging enabled, those CDC ACM devices will be found and used.
+
+#### Option 2: Specifying a particular CDC ACM UART port
+
+If you have multiple CDC ACM ports and want to use a specific one, you can specify it with the `cdc-port` property:
 
 ```dts
 / {
@@ -73,7 +92,7 @@ There are two common configurations:
 };
 ```
 
-#### Option 2: Using the ZMK USB logging UART port
+Or using the ZMK USB logging UART port:
 
 ```dts
 / {
@@ -122,6 +141,11 @@ manifest:
     path: config
 ```
 
+## 要件
+
+- デバイスツリーに`zephyr,cdc-acm-uart`と互換性のあるデバイスが少なくとも1つ必要です。これがないとビルドは失敗します。
+- ZMK StudioまたはUSBロギングが有効になっている場合、それらのCDC ACMデバイスを自動的に検出できます。
+
 ## 使用方法
 
 ### 1. <keyboard>.confで機能を有効にする
@@ -151,9 +175,23 @@ CONFIG_ZMK_CDC_ACM_BOOTLOADER_TRIGGER_RESET_CODE=0x57
 
 ### 2. デバイスツリーオーバーレイにブートローダートリガーノードを追加
 
-一般的な設定には2つの方法があります：
+ブートローダートリガーを追加するには2つの方法があります：
 
-#### 方法1: 専用のCDC ACM UARTポートを使用
+#### 方法1: 自動検出
+
+```dts
+/ {
+    bootloader_trigger: bootloader_trigger {
+        compatible = "zmk,cdc-acm-bootloader-trigger";
+    };
+};
+```
+
+この設定では、モジュールは`zephyr,cdc-acm-uart`互換性を持つ最初に利用可能なデバイスを自動的に検出して使用します。ZMK StudioやUSBロギングが有効になっている場合、それらのCDC ACMデバイスが検出されて使用されます。
+
+#### 方法2: 特定のCDC ACM UARTポートを指定
+
+複数のCDC ACMポートがあり、特定のポートを使用したい場合は、`cdc-port`プロパティで指定できます：
 
 ```dts
 / {
@@ -170,7 +208,7 @@ CONFIG_ZMK_CDC_ACM_BOOTLOADER_TRIGGER_RESET_CODE=0x57
 };
 ```
 
-#### 方法2: ZMK USBロギングUARTポートを使用
+または、ZMK USBロギングUARTポートを使用する場合：
 
 ```dts
 / {

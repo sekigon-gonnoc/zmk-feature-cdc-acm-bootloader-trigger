@@ -21,6 +21,11 @@ LOG_MODULE_REGISTER(zmk_cdc_acm_bootloader_trigger, CONFIG_ZMK_LOG_LEVEL);
 
 #if DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT)
 
+// Check if there's at least one zephyr,cdc-acm-uart device available in the system
+#if !DT_HAS_COMPAT_STATUS_OKAY(zephyr_cdc_acm_uart)
+#error "CDC ACM Bootloader Trigger requires at least one zephyr,cdc-acm-uart device"
+#endif
+
 #define RST_UF2 0x57
 
 #define ZMK_CDC_ACM_BOOTLOADER_TRIGGER_INST(n) DT_INST(n, zmk_cdc_acm_bootloader_trigger)
