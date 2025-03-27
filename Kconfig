@@ -3,7 +3,7 @@
 
 config ZMK_CDC_ACM_BOOTLOADER_TRIGGER
     bool "Enter bootloader mode when CDC ACM port is closed after being opened at 1200bps"
-    depends on USB_CDC_ACM && USB_DEVICE_STACK && ZMK_USB
+    depends on USB_CDC_ACM && USB_DEVICE_STACK
     help
       When enabled, the device will reset into bootloader mode
       when a CDC ACM port with the bootloader-trigger property is closed after being opened at 1200bps.

@@ -30,7 +30,7 @@ LOG_MODULE_REGISTER(zmk_cdc_acm_bootloader_trigger, CONFIG_ZMK_LOG_LEVEL);
 #endif
 
 struct cdc_acm_bootloader_trigger_config {
-    const struct device *cdc_acm_dev;
+    const struct device *cdc_acm_dev; /* Can be NULL if auto-detect is used */
 };
 
 struct cdc_acm_bootloader_trigger_data {
@@ -139,17 +139,36 @@ ZMK_SUBSCRIPTION(cdc_acm_bootloader, zmk_usb_conn_state_changed);
 static int cdc_acm_bootloader_trigger_init(const struct device *dev) {
     const struct cdc_acm_bootloader_trigger_config *config = dev->config;
     struct cdc_acm_bootloader_trigger_data *data = dev->data;
+    const struct device *cdc_dev = NULL;
     
-    if (!device_is_ready(config->cdc_acm_dev)) {
-        LOG_ERR("CDC ACM device not ready");
-        return -ENODEV;
+    /* If we have a configured CDC ACM device, use it */
+    if (config->cdc_acm_dev != NULL) {
+        cdc_dev = config->cdc_acm_dev;
+        if (!device_is_ready(cdc_dev)) {
+            LOG_ERR("Configured CDC ACM device not ready");
+            return -ENODEV;
+        }
+    } else {
+        /* Auto-detect a zephyr,cdc-acm-uart compatible device */
+        #define CDC_ACM_UART_NODE DT_COMPAT_GET_ANY_STATUS_OKAY(zephyr_cdc_acm_uart)
+        #if DT_NODE_EXISTS(CDC_ACM_UART_NODE)
+            cdc_dev = DEVICE_DT_GET(CDC_ACM_UART_NODE);
+            if (!device_is_ready(cdc_dev)) {
+                LOG_ERR("Found CDC ACM UART device is not ready");
+                return -ENODEV;
+            }
+            LOG_INF("Auto-detected zephyr,cdc-acm-uart device: %s", cdc_dev->name);
+        #else
+            LOG_ERR("No zephyr,cdc-acm-uart compatible device found in device tree");
+            return -ENODEV;
+        #endif
     }
-
+    
     /* Initial state setup */
     data->port_open = false;
     data->baud_rate = 0;
     data->usb_connected = false;
-    data->cdc_acm_dev = config->cdc_acm_dev; /* Store CDC ACM device in data */
+    data->cdc_acm_dev = cdc_dev; /* Store detected or provided CDC ACM device */
 
     /* Initialize the polling work */
     k_work_init_delayable(&data->poll_work, poll_cdc_state_work_handler);
@@ -170,7 +189,9 @@ static int cdc_acm_bootloader_trigger_init(const struct device *dev) {
     };                                                                                         \
                                                                                                \
     static const struct cdc_acm_bootloader_trigger_config cdc_acm_bootloader_trigger_config_##n = { \
-        .cdc_acm_dev = DEVICE_DT_GET(DT_INST_PHANDLE(n, cdc_port)),                           \
+        .cdc_acm_dev = COND_CODE_1(DT_INST_NODE_HAS_PROP(n, cdc_port),                        \
+                                 (DEVICE_DT_GET(DT_INST_PHANDLE(n, cdc_port))),               \
+                                 (NULL)),                                                       \
     };                                                                                         \
                                                                                                \
     DEVICE_DT_INST_DEFINE(n, cdc_acm_bootloader_trigger_init, NULL,                           \
@@ -179,5 +200,4 @@ static int cdc_acm_bootloader_trigger_init(const struct device *dev) {
                          CONFIG_KERNEL_INIT_PRIORITY_DEVICE, NULL);
 
 DT_INST_FOREACH_STATUS_OKAY(CDC_ACM_BOOTLOADER_TRIGGER_INIT)
-
 #endif /* CONFIG_ZMK_CDC_ACM_BOOTLOADER_TRIGGER */

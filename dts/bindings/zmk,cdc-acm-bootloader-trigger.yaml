@@ -5,5 +5,5 @@ compatible: "zmk,cdc-acm-bootloader-trigger"
 properties:
   cdc-port:
     type: phandle
-    required: true
-    description: CDC ACM port to monitor for 1200bps followed by port close
+    required: false
+    description: CDC ACM port to monitor for 1200bps followed by port close. If not specified, the driver will automatically use the first available zephyr,cdc-acm-uart device in the system.
