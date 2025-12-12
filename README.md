@@ -16,11 +16,11 @@ manifest:
   projects:
     - name: zmk
       remote: zmkfirmware
-      revision: main
+      revision: v0.2
       import: app/west.yml
     - name: zmk-feature-cdc-acm-bootloader-trigger
       remote: sekigon-gonnoc
-      revision: main
+      revision: v0.2
   self:
     path: config
 ```
@@ -132,11 +132,11 @@ manifest:
   projects:
     - name: zmk
       remote: zmkfirmware
-      revision: main
+      revision: v0.2
       import: app/west.yml
     - name: zmk-feature-cdc-acm-bootloader-trigger
       remote: sekigon-gonnoc
-      revision: main
+      revision: v0.2
   self:
     path: config
 ```
