@@ -26,12 +26,4 @@ config ZMK_CDC_ACM_BOOTLOADER_TRIGGER_POLL_MS
       when the port is opened at 1200 baud and then closed.
       Polling only occurs when USB is connected.
 
-config ZMK_CDC_ACM_BOOTLOADER_TRIGGER_RESET_CODE
-    hex "Reset code for entering bootloader mode"
-    default 0x57
-    help
-      The reset code to use when rebooting into bootloader mode.
-      Default value 0x57 is for UF2 bootloader (used on Adafruit nRF52 Bootloader).
-      For other boards/bootloaders, you may need to use a different code.
-
 endif # ZMK_CDC_ACM_BOOTLOADER_TRIGGER

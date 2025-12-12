@@ -16,10 +16,12 @@ manifest:
   projects:
     - name: zmk
       remote: zmkfirmware
+      # To pin ZMK to a specific release, set revision, e.g. v0.2
       revision: main
       import: app/west.yml
     - name: zmk-feature-cdc-acm-bootloader-trigger
       remote: sekigon-gonnoc
+      # To pin this module to a specific release, set revision, e.g. v0.2
       revision: main
   self:
     path: config
@@ -29,6 +31,7 @@ manifest:
 
 - At least one device compatible with `zephyr,cdc-acm-uart` must be available in your device tree. Without this, the build will fail.
 - If you have ZMK Studio or USB Logging enabled, those CDC ACM devices can be automatically detected and used.
+- Follow the bootloader setup steps as documented here: https://zmk.dev/docs/development/hardware-integration/bootloader/adafruit-nrf52
 
 ## Usage
 
@@ -48,14 +51,7 @@ CONFIG_ZMK_CDC_ACM_BOOTLOADER_TRIGGER_DELAY_MS=100
 
 # Polling interval for CDC ACM state (default: 100ms)
 CONFIG_ZMK_CDC_ACM_BOOTLOADER_TRIGGER_POLL_MS=100
-
-# Reset code for entering bootloader mode (default: 0x57 for Adafruit nRF52 bootloader)
-CONFIG_ZMK_CDC_ACM_BOOTLOADER_TRIGGER_RESET_CODE=0x57
 ```
-
-The `RESET_CODE` should be set to match your board's bootloader entry code:
-- 0x57: Adafruit nRF52 bootloader
-- Check your MCU or bootloader documentation for the appropriate value for other boards
 
 ### 2. Add the bootloader trigger node to your device tree overlay
 
@@ -132,10 +128,12 @@ manifest:
   projects:
     - name: zmk
       remote: zmkfirmware
+      # ZMKを特定のリリースに固定するには、revision: v0.2 のようにバージョンを指定してください
       revision: main
       import: app/west.yml
     - name: zmk-feature-cdc-acm-bootloader-trigger
       remote: sekigon-gonnoc
+      # ZMKにあわせて特定のリリースに固定するには、revision: v0.2 のようにバージョンを指定してください
       revision: main
   self:
     path: config
@@ -145,6 +143,7 @@ manifest:
 
 - デバイスツリーに`zephyr,cdc-acm-uart`と互換性のあるデバイスが少なくとも1つ必要です。これがないとビルドは失敗します。
 - ZMK StudioまたはUSBロギングが有効になっている場合、それらのCDC ACMデバイスを自動的に検出できます。
+- ZMK側でブートローダーのセットアップが必要です: https://zmk.dev/docs/development/hardware-integration/bootloader/adafruit-nrf52
 
 ## 使用方法
 
@@ -164,14 +163,7 @@ CONFIG_ZMK_CDC_ACM_BOOTLOADER_TRIGGER_DELAY_MS=100
 
 # CDC ACM状態のポーリング間隔（デフォルト：100ms）
 CONFIG_ZMK_CDC_ACM_BOOTLOADER_TRIGGER_POLL_MS=100
-
-# ブートローダーモードに入るためのリセットコード（デフォルト：Adafruit nRF52ブートローダー用の0x57）
-CONFIG_ZMK_CDC_ACM_BOOTLOADER_TRIGGER_RESET_CODE=0x57
 ```
-
-`RESET_CODE`はボードのブートローダー入力コードに合わせて設定する必要があります：
-- 0x57: Adafruit nRF52ブートローダー
-- 他のボードでは、MCUまたはブートローダーのドキュメントで適切な値を確認してください
 
 ### 2. デバイスツリーオーバーレイにブートローダートリガーノードを追加
 

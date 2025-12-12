@@ -12,6 +12,7 @@
 #include <zephyr/sys/reboot.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/devicetree.h>
+#include <zephyr/retention/bootmode.h>
 
 #include <zmk/events/usb_conn_state_changed.h>
 
@@ -59,8 +60,9 @@ static void enter_bootloader_work_handler(struct k_work *work) {
     /* Small delay to let USB communications complete */
     k_sleep(K_MSEC(CONFIG_ZMK_CDC_ACM_BOOTLOADER_TRIGGER_DELAY_MS));
 
-    /* Reboot into bootloader mode using the configured reset code */
-    sys_reboot(CONFIG_ZMK_CDC_ACM_BOOTLOADER_TRIGGER_RESET_CODE);
+    /* Reboot into bootloader mode */
+    bootmode_set(BOOT_MODE_TYPE_BOOTLOADER);
+    sys_reboot(SYS_REBOOT_WARM);
 }
 
 static void poll_cdc_state_work_handler(struct k_work *work) {
